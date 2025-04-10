@@ -1,47 +1,48 @@
 import socket
+import threading
 
-
-def run_server():
-    # create a socket object
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    server_ip = "127.0.0.1"
-    port = 8000
-
-    # bind the socket to a specific address and port
-    server.bind((server_ip, port))
-    # listen for incoming connections
-    server.listen(0)
-    print(f"Listening on {server_ip}:{port}")
-
-    # accept incoming connections
-    client_socket, client_address = server.accept()
-    print(f"Accepted connection from {client_address[0]}:{client_address[1]}")
-
-    # receive data from the client
+def receber_mensagens(client_socket):
+    """Recebe mensagens do servidor."""
     while True:
-        request = client_socket.recv(1024)
-        request = request.decode("utf-8") # convert bytes to string
-        
-        # if we receive "close" from the client, then we break
-        # out of the loop and close the conneciton
-        if request.lower() == "close":
-            # send response to the client which acknowledges that the
-            # connection should be closed and break out of the loop
-            client_socket.send("closed".encode("utf-8"))
+        try:
+            mensagem = client_socket.recv(1024).decode('utf-8')
+            if not mensagem:
+                print("Conexão encerrada pelo servidor.")
+                break
+            print(mensagem)
+        except:
+            print("Conexão perdida com o servidor.")
             break
 
-        print(f"Received: {request}")
+def run_client():
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_ip = "127.0.0.1" #aqui preciso informar o IP do servidor (ipconfig)
+    server_port = 8000
+    client.connect((server_ip, server_port))
 
-        response = "accepted".encode("utf-8") # convert string to bytes
-        # convert and send accept response to the client
-        client_socket.send(response)
+    # Recebe e define o nome de usuário
+    while True:
+        mensagem_servidor = client.recv(1024).decode('utf-8')
+        print(mensagem_servidor, end="")
+        if "Digite seu nome de usuário:" in mensagem_servidor:
+            nome_usuario = input()
+            client.send(nome_usuario.encode('utf-8'))
+        elif "Bem-vindo" in mensagem_servidor:
+            break
 
-    # close connection socket with the client
-    client_socket.close()
-    print("Connection to client closed")
-    # close server socket
-    server.close()
+    # Inicia a thread para receber mensagens
+    thread_receber = threading.Thread(target=receber_mensagens, args=(client,))
+    thread_receber.start()
 
+    while True:
+        mensagem = input()
+        if mensagem.lower() == "sair":
+            client.send(f"{nome_usuario} saiu do chat.".encode('utf-8'))
+            break
+        client.send(mensagem.encode('utf-8'))
 
-run_server()
+    client.close()
+    print("Conexão com o servidor encerrada.")
+
+if __name__ == "__main__":
+    run_client()
