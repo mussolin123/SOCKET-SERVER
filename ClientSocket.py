@@ -17,7 +17,7 @@ def receber_mensagens(client_socket):
 def run_client():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_ip = "127.0.0.1"
-    server_port = 8000
+    server_port = 42000
     client.connect((server_ip, server_port))
 
     # Recebe e define o nome de usuário
