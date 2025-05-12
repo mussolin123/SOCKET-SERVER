@@ -21,8 +21,8 @@ A aplicação consiste em um servidor que gerencia conexões de múltiplos clien
   - No arquivo server.py, certifique-se de que o servidor está configurado para ouvir em todas as interfaces de rede, definindo o IP do servidor como '0.0.0.0':
 
 ```bash
-server_ip = '0.0.0.0'
-server_port = 8000
+server_ip = '0.0.0.0' (IP Servidor)
+server_port = 42000
 ```
 - Isso permitirá que o servidor aceite conexões de outros dispositivos na mesma rede.
 
@@ -30,5 +30,12 @@ server_port = 8000
    - No arquivo client.py, atualize as variáveis server_ip e server_port para corresponderem ao endereço IP do servidor e à porta em que ele está ouvindo:
 ```bash
 server_ip = '192.168.1.100'  # Substitua pelo IP do servidor
-server_port = 8000
+server_port = 42000
+```
+
+- **Rodando o projeto**
+   - Baixe o projeto, e acesse via CMD, 
+```bash
+python ServerSocket.py
+python ClientSocket.py
 ```
